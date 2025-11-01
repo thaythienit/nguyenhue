@@ -61,7 +61,7 @@
     }
 
     model Settings {
-      id    Int    @id @default(autoincre ment())
+      id    Int    @id @default(autoincrement())
       key   String @unique @default("default")
       value Json
     }
