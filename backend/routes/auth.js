@@ -13,7 +13,7 @@ const generateToken = (id) => {
 };
 
 // POST /api/auth/register
-router.post('/api/auth/register', async (req, res) => {
+router.post('/register', async (req, res) => {
   const { username, password, displayName } = req.body;
   
   if (!username || !password || !displayName) {
@@ -35,7 +35,7 @@ router.post('/api/auth/register', async (req, res) => {
         username,
         password: hashedPassword,
         displayName,
-        role: 'member', // Default role
+        role: 'MEMBER', // Default role
         avatarUrl: `https://i.pravatar.cc/150?u=${username}`,
       },
     });
@@ -44,7 +44,7 @@ router.post('/api/auth/register', async (req, res) => {
       id: user.id,
       username: user.username,
       displayName: user.displayName,
-      role: user.role,
+      role: user.role.toLowerCase(),
       avatarUrl: user.avatarUrl,
       token: generateToken(user.id),
     });
@@ -56,7 +56,7 @@ router.post('/api/auth/register', async (req, res) => {
 
 
 // POST /api/auth/login
-router.post('api/auth/login', async (req, res) => {
+router.post('/login', async (req, res) => {
   const { username, password } = req.body;
   try {
     const user = await prisma.user.findUnique({ where: { username } });
@@ -66,7 +66,7 @@ router.post('api/auth/login', async (req, res) => {
         id: user.id,
         username: user.username,
         displayName: user.displayName,
-        role: user.role,
+        role: user.role.toLowerCase(),
         avatarUrl: user.avatarUrl,
         token: generateToken(user.id),
       });
