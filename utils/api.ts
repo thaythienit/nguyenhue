@@ -4,7 +4,7 @@ import axios from 'axios';
 const api = axios.create({
   // For local development, this points to your backend server.
   // When deploying, you will need to change this to your live backend URL from Render.
-  baseURL: 'https://nguyenhue-backend.onrender.com/api',
+  baseURL: 'https://nguyenhue-backend.onrender.com',
   headers: {
     'Content-Type': 'application/json',
   },
