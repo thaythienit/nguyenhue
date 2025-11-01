@@ -1,14 +1,72 @@
-generator client {
-  provider = "prisma-client-js"
-}
+<file name="schema.prisma">
+  <!-- Content of backend/prisma/schema.prisma -->
+  <content>
+    // This is your Prisma schema file,
+    // learn more about it in the docs: https://pris.ly/d/prisma-schema 
 
-// 2. Cấu hình Datasource (Nguồn dữ liệu)
-// Đây là nơi kết nối với database của bạn.
-datasource db {
-  provider = "postgresql" // Giả sử bạn dùng PostgreSQL (phổ biến trên Render)
-  
-  // *** ĐÂY LÀ PHẦN QUAN TRỌNG NHẤT ***
-  // Lệnh này bảo Prisma lấy chuỗi kết nối từ biến môi trường tên là DATABASE_URL
-  // Đây chính là biến bạn vừa thêm trên Render ở bước trước.
-  url      = env("postgresql://dbnguyenhue_user:E9T6kdHpVqZYFTn5pJAzqTjpUu3Wzrat@dpg-d42sdgf5r7bs73bb8r4g-a/dbnguyenhue") 
-}
+    generator client {
+      provider = "prisma-client-js"
+    }
+
+    datasource db {
+      provider  = "postgresql"
+      url      = env("postgresql://dbnguyenhue_user:E9T6kdHpVqZYFTn5pJAzqTjpUu3Wzrat@dpg-d42sdgf5r7bs73bb8r4g-a/dbnguyenhue")
+    }
+
+    model User {
+      id           Int       @id @default(autoincrement())
+      username    String    @unique
+      password    String
+      role        String    @default("member") // admin, teacher, member
+      displayName String
+      avatarUrl    String?
+      articles    Article[]
+      createdAt   DateTime  @default(now())
+      updatedAt   DateTime   @updatedAt
+    }
+
+    model Category {
+      id       Int       @id @default(autoincrement()) 
+      name     String    @unique
+      articles Article[]
+    }
+
+    model Article {
+      id         Int       @id @default(autoincrement())
+      title      String
+      excerpt    String
+      content    String    @db.Text
+      imageUrl   String
+      date       DateTime
+      featured   Boolean  @default(false)
+      spotlight  Boolean  @default(false)
+      author     User     @relation(fields: [authorId],  references: [id])
+      authorId   Int
+      category   Category @relation(fields: [categoryId], references : [id])
+      categoryId Int
+      createdAt  DateTime @default(now())
+      updatedAt  DateTime @updated At
+    }
+
+    model PageContent {
+      id      Int    @id @default(autoincrement())
+      pageKey String @unique // e.g., 'about', 'contact'
+      content Json
+    }
+
+    model ManagedFile  {
+      id        String   @id @default(uuid())
+      name      String
+      url       String
+      type       String // 'image', 'video', 'pdf', 'other'
+      size      Int
+      createdAt DateTime  @default(now())
+    }
+
+    model Settings {
+      id    Int    @id @default(autoincre ment())
+      key   String @unique @default("default")
+      value Json
+    }
+  </content>
+</file>
