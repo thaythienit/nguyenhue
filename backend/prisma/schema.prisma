@@ -5,7 +5,7 @@ generator client {
 // 2. Cấu hình Datasource (Nguồn dữ liệu)
 // Đây là nơi kết nối với database của bạn.
 datasource db {
-  provider = "postgresql://dbnguyenhue_user:E9T6kdHpVqZYFTn5pJAzqTjpUu3Wzrat@dpg-d42sdgf5r7bs73bb8r4g-a/dbnguyenhue" // Giả sử bạn dùng PostgreSQL (phổ biến trên Render)
+  provider = "postgresql" // Giả sử bạn dùng PostgreSQL (phổ biến trên Render)
   
   // *** ĐÂY LÀ PHẦN QUAN TRỌNG NHẤT ***
   // Lệnh này bảo Prisma lấy chuỗi kết nối từ biến môi trường tên là DATABASE_URL
