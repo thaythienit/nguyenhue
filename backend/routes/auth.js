@@ -13,7 +13,7 @@ const generateToken = (id) => {
 };
 
 // POST /api/auth/register
-router.post('/register', async (req, res) => {
+router.post('/api/auth/register', async (req, res) => {
   const { username, password, displayName } = req.body;
   
   if (!username || !password || !displayName) {
@@ -56,7 +56,7 @@ router.post('/register', async (req, res) => {
 
 
 // POST /api/auth/login
-router.post('/login', async (req, res) => {
+router.post('api/auth/login', async (req, res) => {
   const { username, password } = req.body;
   try {
     const user = await prisma.user.findUnique({ where: { username } });
