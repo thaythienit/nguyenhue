@@ -1,6 +1,3 @@
-<file name="schema.prisma">
-  <!-- Content of backend/prisma/schema.prisma -->
-  <content>
     // This is your Prisma schema file,
     // learn more about it in the docs: https://pris.ly/d/prisma-schema 
 
@@ -45,7 +42,7 @@
       category   Category @relation(fields: [categoryId], references : [id])
       categoryId Int
       createdAt  DateTime @default(now())
-      updatedAt  DateTime @updated At
+      updatedAt  DateTime @updatedAt
     }
 
     model PageContent {
@@ -68,5 +65,3 @@
       key   String @unique @default("default")
       value Json
     }
-  </content>
-</file>
