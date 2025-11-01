@@ -2,7 +2,7 @@
 const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcryptjs');
-const { PrismaClient } = require('@prisma/client');
+const { PrismaClient, Role } = require('@prisma/client');
 const { protect, admin } = require('../middleware/authMiddleware');
 const prisma = new PrismaClient();
 
@@ -18,7 +18,9 @@ router.get('/', protect, admin, async (req, res) => {
         avatarUrl: true,
       },
     });
-    res.json(users);
+    // Convert roles to lowercase for frontend compatibility
+    const formattedUsers = users.map(user => ({...user, role: user.role.toLowerCase()}));
+    res.json(formattedUsers);
   } catch (error) {
     res.status(500).json({ message: 'Server error' });
   }
@@ -40,14 +42,14 @@ router.post('/', protect, admin, async (req, res) => {
             data: {
                 username,
                 password: hashedPassword,
-                role,
+                role: role.toUpperCase(), // Store role in uppercase as per enum
                 displayName,
                 avatarUrl: `https://i.pravatar.cc/150?u=${username}`,
             },
             select: { id: true, username: true, role: true, displayName: true, avatarUrl: true }
         });
 
-        res.status(201).json(newUser);
+        res.status(201).json({...newUser, role: newUser.role.toLowerCase()});
 
     } catch (error) {
         res.status(500).json({ message: 'Server error', error: error.message });
@@ -66,8 +68,8 @@ router.put('/:id', protect, admin, async (req, res) => {
     }
 
     // Prevent changing role of the last admin
-    if (user.role === 'admin' && role !== 'admin') {
-        const adminCount = await prisma.user.count({ where: { role: 'admin' } });
+    if (user.role === 'ADMIN' && role.toUpperCase() !== 'ADMIN') {
+        const adminCount = await prisma.user.count({ where: { role: 'ADMIN' } });
         if (adminCount <= 1) {
             return res.status(400).json({ message: 'Cannot change role of the last admin.' });
         }
@@ -75,10 +77,10 @@ router.put('/:id', protect, admin, async (req, res) => {
 
     const updatedUser = await prisma.user.update({
       where: { id: parseInt(id) },
-      data: { username, role, displayName },
+      data: { username, role: role.toUpperCase(), displayName },
       select: { id: true, username: true, role: true, displayName: true, avatarUrl: true }
     });
-    res.json(updatedUser);
+    res.json({...updatedUser, role: updatedUser.role.toLowerCase()});
   } catch (error) {
     res.status(500).json({ message: 'Server error' });
   }
@@ -97,8 +99,8 @@ router.delete('/:id', protect, admin, async (req, res) => {
     if (userToDelete.id === req.user.id) {
         return res.status(400).json({ message: 'You cannot delete your own account.' });
     }
-    if (userToDelete.role === 'admin') {
-        const adminCount = await prisma.user.count({ where: { role: 'admin' } });
+    if (userToDelete.role === 'ADMIN') {
+        const adminCount = await prisma.user.count({ where: { role: 'ADMIN' } });
         if (adminCount <= 1) {
             return res.status(400).json({ message: 'Cannot delete the last admin account.' });
         }
